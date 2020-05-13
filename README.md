@@ -10,6 +10,8 @@ The numerical scheme implemented is based on the <a role="button" href="https://
 
 ## Running ns2div
 
+![](OUTPUTS/RTIN3_Re1000_40x80_italu1_proj2.pdf)
+
 ## Manual setup
 
 
