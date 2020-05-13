@@ -1,6 +1,6 @@
 # ns2div
 
-ns2div is a GPU accelerated solver for Navier-Stokes equations with variable density based on 
+ns2div is a GPU accelerated Python solver for Navier-Stokes equations with variable density based on 
 Density variable Navier-Stokes code with GPU acceleration on rectangular structured meshes. The code is related to the paper:
 
 > Monica Dessole, Fabio Marcuzzi "**[Fully iterative ILU preconditioning of the unsteady Navier–Stokes equations for GPGPU](https://www.sciencedirect.com/science/article/pii/S0898122118306345?via%3Dihub)**", Computers & Mathematics with Applications
@@ -44,4 +44,10 @@ One can make the following changes in the file `manual_setup.py` in order to set
     - ns.cutDAG_LU = 0 (DAG cutting disabled), 1 (enable DAG cutting)
     - ns.cut = 1/2 (percentage between 0 and 1 of levels to be deleted from the DAG of L/U)
 
-    
+## Dependencies
+
+-Python 3
+-Numpy
+-Scipy
+-Pycuda
+-Cuda 9
