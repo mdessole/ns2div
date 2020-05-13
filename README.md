@@ -33,13 +33,13 @@ One can make the following changes in the file `manual_setup.py` in order to set
     - ns.iters = 1 (number of ITALU iterations)
     - ns.ITALU_update_param = k (if k > 1, the ITALU procedure is applied every k iterations) 
     
-    Parameters for L,U triangular linear systems solution in the application of the preconditioner
+    Parameters for L/U triangular linear systems solution in the application of the preconditioner
     - ns.LU_scalar_jacobi = 0 (direct solver), 1 (Jacobi iterative solver)
     - ns.LU_block_jacobi = 0 (direct solver), 1 (Block Jacobi iterative solver)
     - ns.LUit_iters = 3 (number of Jacobi iterations)
-    - ns.approx_diag_LU = 0 (band approximation disabled), 1 (enable approximation of L,U by a band matrix)
+    - ns.approx_diag_LU = 0 (band approximation disabled), 1 (enable approximation of L/U by a band matrix)
     - ns.diag = 3 (desired bandwidth) 
     - ns.cutDAG_LU = 0 (DAG cutting disabled), 1 (enable DAG cutting)
-    - ns.cut = 1/2 (percentage between 0 and 1 of levels to be deleted from the DAG of L,U)
+    - ns.cut = 1/2 (percentage between 0 and 1 of levels to be deleted from the DAG of L/U)
 
     
