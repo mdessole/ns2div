@@ -46,8 +46,8 @@ One can make the following changes in the file `manual_setup.py` in order to set
 
 ## Dependencies
 
--Python 3
--Numpy
--Scipy
--Pycuda
--Cuda 9
+- Python 3
+- Numpy
+- Scipy
+- Pycuda
+- Cuda 9
