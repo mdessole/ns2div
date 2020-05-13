@@ -34,20 +34,20 @@ def manual_setup(ns):
     ns.prec = 1 # 0 (no preconditioner), 1  (diagonal preconditioner), 2 (ILU(0) preconditioner)
 
     # ITALU parameters
-    ns.iterLU = 1  # 0 no ITALU; 1 anable ITALU
-    ns.initialize_LU = 0 # 0 initialize L,U con ILU(0); 1 inizializza L,U con tril,triu
-    ns.iters = 1 # S_ITALU iterations
+    ns.iterLU = 1  # 0 no ITALU; 1 enable ITALU
+    ns.initialize_LU = 0 # 0 initialize L,U con ILU(0); 1 inizialize L,U con tril,triu
+    ns.iters = 1 # number of S_ITALU iterations
     ns.ITALU_restart = 0
     
-    ns.ITALU_update_param = 1 # if k > 1, the ITALU proceture is applied every k iterations (default k=1)
+    ns.ITALU_update_param = 1 # (if k > 1, the ITALU procedure is applied every k iterations)
        
     # parameters for L,U linear system solution in the application of the preconditioner
-    ns.LU_scalar_jacobi = 0 # 0 metodo diretto; 1 metodo iterativo di Jacobi
-    ns.LU_block_jacobi = 0
-    ns.LUit_iters = 3
+    ns.LU_scalar_jacobi = 0 # 0 direct solver; 1 Jacobi iterative solver
+    ns.LU_block_jacobi = 0 # 0 direct solver; 1 Block Jacobi iterative solver
+    ns.LUit_iters = 3 # number of Jacobi iterations
 
     #parameters for approximation by a band matrix
-    ns.approx_diag_LU = 0
+    ns.approx_diag_LU = 0 #1 enable approximation of L,U by a band matrix, 0 otherwise
     ns.diag = 3 #desired bandwidth
 
     #parameters for DAG cutting 
@@ -60,14 +60,14 @@ def manual_setup(ns):
     ns.test_convergence = 0
 
     #test output
-    ns.test_output = 0
+    ns.test_output = 0 #1 enable output data storage at each time step, 0 output data storage disabled
 
     #cartella OUTPUT
     directory = './OUTPUTS/'
     ns.outputs_dir = directory
     
     #test plot
-    ns.test_plot = 0
+    ns.test_plot = 0 #1 enable plot making in RTIN or DROP test cases, 0 plot disabled
 
     #check output directory
     if (ns.test_convergence == 1) or (ns.test_output == 1) or (ns.test_plot == 1):
