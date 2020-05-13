@@ -10,10 +10,8 @@ The numerical scheme implemented is based on the <a role="button" href="https://
 
 ## Running ns2div
 
-\begin{center} <br>
-\includegraphics[width=8in]{OUTPUTS/RTIN3_Re1000_40x80_italu1_proj2.pdf} <br>
-\end{center}
-![Alt](OUTPUTS/RTIN3_Re1000_40x80_italu1_proj2.pdf)
+
+![](OUTPUTS/RTIN3_Re1000_40x80_italu1_proj2.pdf)
 
 ## Manual setup
 
