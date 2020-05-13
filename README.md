@@ -10,8 +10,11 @@ The numerical scheme implemented is based on the <a role="button" href="https://
 
 ## Running ns2div
 
+<img src="OUTPUTS/RTIN3_Re1000_40x80_italu1_proj2.pdf" alt="Test Image" />
 
-![](OUTPUTS/RTIN3_Re1000_40x80_italu1_proj2.pdf)
+<div class="page-break"></div>
+
+
 
 ## Manual setup
 
