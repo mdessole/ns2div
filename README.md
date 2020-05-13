@@ -22,7 +22,7 @@ In order to compute the order of convergence one can run
 ```console
 python test_convergence.py 
 ```
-<img src="OUTPUTS/convergence_proj2_Re1.png" alt="drawing" width="200"/>
+<img src="OUTPUTS/convergence_proj2_Re1.png" alt="drawing" width="500"/>
 
 ## Manual setup
 
