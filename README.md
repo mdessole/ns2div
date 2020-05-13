@@ -25,7 +25,7 @@ python test_convergence.py
 ## Manual setup
 
 One can make the following changes in the file `manual_setup.py` in order to set the following variables:
-- test_output = 0 (1 enable outputs save at each time step), 0 (output save disabled)
+- test_output = 0 (1 enable output data storage at each time step), 0 (output data storage disabled)
 - ns.test_plot = 0 (1 enable plot making in RTIN or DROP test cases), 0 (plots disabled)
 - ns.prec =  0 (no preconditioner), 1  (diagonal preconditioner), 2 (ILU(0) preconditioner)
 - iterLU = 1 (enable ILU(0) with ITALU updates), 0 (ITALU disabled)
