@@ -83,9 +83,9 @@ def densitycontour(ns, scheme):
     plt.setp(axarr, xticks = [x1, x2])
     f.tight_layout(w_pad = 0.2)
 
-    file = ns.outputs_dir+caso+'Re'+re+'_'+nbseg_x+'x'+nbseg_y+metodo+'_'+scheme+'.pdf'
+    file = ns.outputs_dir+caso+'Re'+re+'_'+nbseg_x+'x'+nbseg_y+metodo+'_'+scheme+'.png'
     print('saving '+file)
-    plt.savefig(file, format='pdf')
+    plt.savefig(file, format='png')
 
 
     return

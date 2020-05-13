@@ -80,11 +80,11 @@ def test(scheme = 'proj2'):
     
         pyplot.legend(['Err u','Err p','Err rho', 'Slope 2','Slope 3' ], loc ='upper left')
     
-        file = prob.outputs_dir+'convergence' + '_' + scheme + '_Re' + str(re) + '.pdf'
+        file = prob.outputs_dir+'convergence' + '_' + scheme + '_Re' + str(re) + '.png'
         print('saving '+file)
-        pyplot.savefig(file, format='pdf')
+        pyplot.savefig(file, format='png')
         #pyplot.show()
     #endfor
 
 
-test(scheme = sys.argv[1])
+test()
