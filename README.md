@@ -10,6 +10,12 @@ The numerical scheme implemented is based on the <a role="button" href="https://
 
 ## Running ns2div
 
+```console
+python test_profile.py 8 8 EXAC
+```
+
+
+
 ![alt-text](OUTPUTS/RTIN3_Re1000_40x80_italu1_proj2.png)
 
 
