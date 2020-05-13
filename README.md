@@ -29,6 +29,7 @@ One can make the following changes in the file `manual_setup.py` in order to set
 - ns.prec =  0 (no preconditioner), 1  (diagonal preconditioner), 2 (ILU(0) preconditioner)
 - iterLU = 1 (enable ILU(0) with ITALU updates), 0 (no ITALU, computation of the preconditioner at each time iteration)
     - ns.initialize_LU = 0 (0 initialize L,U con ILU(0)), 1 (inizialize L,U con tril,triu)
-
-
-
+    - ns.iters = 1 (number of ITALU iterations)
+    - ns.ITALU_update_param = k (if k > 1, the ITALU procedure is applied every k iterations)
+    Parameters for L,U triangular linear systems solution in the application of the preconditioner
+    - ns.LU_scalar_jacobi = 0 (0 direct solver; 1 Jacobi iterative solver)
