@@ -18,10 +18,13 @@ python test_profile.py 8 8 EXAC
 ```
 run the exact test case on a 8x8 structured mesh.
 
-In order to compute the convergence order one can run
+In order to compute the order of convergence one can run
 ```console
 python test_convergence.py 
 ```
+
+![alt-text](OUTPUTS/convergence_Re1_proj2.png)
+
 ## Manual setup
 
 One can make the following changes in the file `manual_setup.py` in order to set the following variables:
