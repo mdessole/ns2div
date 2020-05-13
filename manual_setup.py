@@ -26,12 +26,12 @@ def manual_setup(ns):
     ns.renum = 1 # 0 no renum # 1 rcm renum
     
     #Solution of linear system
-    ns.gpu_solver = 1 # 0 diretto su CPU; 1 iterativo su GPU
+    ns.gpu_solver = 1 # 0 spsolve on CPU; 1 GMRES (with preconditioner) on GPU
     
     #GMRES parameters
     ns.restart = 30 #restart
     ns.tol = 0.0000000000001 #tolerance
-    ns.prec = 1 # preconditioner: 0 no prec; 1 prec diagonale; 2 prec ilu(0)
+    ns.prec = 1 # 0 (no preconditioner), 1  (diagonal preconditioner), 2 (ILU(0) preconditioner)
 
     # ITALU parameters
     ns.iterLU = 1  # 0 no ITALU; 1 anable ITALU
