@@ -15,7 +15,7 @@ In order to run a test one shoud execute the file `test_profile.py` with the inp
 ```console
 python test_profile.py 8 8 EXAC
 ```
-run the exact test case on a $8 \times 8$ structured mesh.
+run the exact test case on a \$8 \times 8\$ structured mesh.
 
 
 
