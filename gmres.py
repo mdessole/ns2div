@@ -86,7 +86,6 @@ def itaLU(ns, i, n, nnz, A, d_A_data, d_A_indptr, d_A_indices, axis = 1): # A, d
         d_diagU = pycuda.gpuarray.zeros(n, ns.type_fd)
             
         if (axis == 1):
-            #print 'ns.init_italu1 = ', ns.init_italu1, 'ns.primo_italu1 = ', ns.primo_italu1
             if (ns.init_italu1 == 0):
                 #Initialize preconditioner
                 
@@ -103,9 +102,6 @@ def itaLU(ns, i, n, nnz, A, d_A_data, d_A_indptr, d_A_indices, axis = 1): # A, d
                                  c_ptr(d_exectime.ptr))
 
                 elif (ns.initialize_LU == 1):
-                    # L,U = traingular parts of A
-                    #U = triu(A).tocsr()
-                    #L = tril(A).tocsr()
                     ns.d_LU1_data = d_A_data.copy() 
                 #endif   
                 if ((ns.cutDAG_LU == 1) and (ns.init_cutDAG_LU1 == 0)):
@@ -145,8 +141,6 @@ def itaLU(ns, i, n, nnz, A, d_A_data, d_A_indptr, d_A_indices, axis = 1): # A, d
                                  c_ptr(d_A_indptr.ptr), c_ptr(d_A_indices.ptr), c_ptr(d_exectime.ptr))
 
                 elif (ns.initialize_LU == 1):
-                    #U = triu(A).tocsr()
-                    #L =  tril(A).tocsr()
                     ns.d_LU2_data = d_A_data.copy() 
                 #endif
                 
@@ -186,7 +180,7 @@ def block_diagonalize(ns, M, n):
 
         while (ii < n):
             ii = block_init + 2
-            while (ii < n) and (M.rows[ii].index(ii) >= 2): #M.rows[ii].index(ii) = (nnz-1) nella riga ii di L
+            while (ii < n) and (M.rows[ii].index(ii) >= 2): 
                 ii = ii + 1
             block_end = min(ii,n-1) #-1
 
@@ -197,8 +191,7 @@ def block_diagonalize(ns, M, n):
                 M.data[row] = [M.data[row][i] for i in indices if i not in delete]
                 M.rows[row] = [M.rows[row][i] for i in indices if i not in delete]
             #endfor
-            
-            #calcolo in nuovo inizio blocco
+
             block_init = block_end
         #endwhile
         
@@ -255,8 +248,6 @@ def matrix_blocking(ns, i, A, n, axis):
         
         MM = block_diagonalize(ns, MM,  n)
         MM = csr_matrix(MM)
-
-        #fastspy2(M, MM, n, 0, 200, 'prova', markersize = 0.2)
         
         
         if (axis == 1):
