@@ -4,7 +4,7 @@ import os
 def output_directory(file_path):
 
     if not os.path.isdir(file_path):
-        print('Crating outputs directory: ' + file_path)
+        print('Creating outputs directory: ' + file_path)
         os.makedirs(file_path)
     #endif
 
