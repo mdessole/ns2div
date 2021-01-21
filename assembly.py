@@ -8,7 +8,7 @@ from ctypes import c_ulonglong as c_ptr
 from ns_auxil import *
 from pycuda_auxil import *
 
-def pri_SR_by_key(ns, keys, vals, tp = 'sparse'):# (ns, chiave, valore):
+def pri_SR_by_key(ns, keys, vals, tp = 'sparse'):
     n = int(keys.size)
 
     
@@ -31,8 +31,8 @@ def pri_SR_by_key(ns, keys, vals, tp = 'sparse'):# (ns, chiave, valore):
     out_vals_d.gpudata.free()
 
     if tp == 'sparse':
-        indices = numpy.nonzero(out_vals[offset:reduced_size]) # prendo indici elementi non zero
-        out_vals = out_vals[offset:reduced_size][indices] # prendo solo quelli diversi da zero
+        indices = numpy.nonzero(out_vals[offset:reduced_size]) 
+        out_vals = out_vals[offset:reduced_size][indices] 
         out_keys = out_keys[offset:reduced_size][indices]
     elif tp == 'dense':
         out_vals = out_vals[offset:reduced_size]
@@ -85,13 +85,11 @@ def assembly(ns, mesh, scheme):
             
             r_M_P1_ind, r_M_P1_val   = pri_SR_by_key(ns, M_P1_ind, M_P1_val)
             I_M_P1, J_M_P1 = create_ij(ns, r_M_P1_ind, ns.nn)
-            #ns.M_P1 = coo_matrix((r_M_P1_val, (I_M_P1, J_M_P1)), shape=(ns.n, ns.n), dtype = ns.type_fd).tocsr()
             
             r_M_P2_ind, r_M_P2_val   = pri_SR_by_key(ns, M_P2_ind, M_P2_val)
             I_M_P2, J_M_P2 = create_ij(ns, r_M_P2_ind, ns.nn)
             ns.M_P2 = coo_matrix((r_M_P2_val, (I_M_P2, J_M_P2)), shape=(ns.nn, ns.nn), dtype = ns.type_fd).tocsr()
 
-            #ns.perm_P1, ns.perm_P1_inv = ns.symrcm(ns.M_P1, ns.n)
             ns.perm_P1 = numpy.arange(ns.n)
             ns.perm_P1_inv = numpy.arange(ns.n)
             ns.perm_P2, ns.perm_P2_inv = ns.symrcm(ns.M_P2, ns.nn)
@@ -119,11 +117,7 @@ def assembly(ns, mesh, scheme):
             ns.volume_barycenter[0,:] = ns.volume_barycenter.copy()[0,ns.perm_P1]
             ns.volume_barycenter[1,:] = ns.volume_barycenter.copy()[1, ns.perm_P1]
             ns.horizontal_edges = mesh.get_horizontal_edges()
-            #ns.horizontal_edges[0, ns.perm_P1] = ns.horizontal_edges.copy()[0, :]
-            #ns.horizontal_edges[1, ns.perm_P1] = ns.horizontal_edges.copy()[1, :]
             ns.vertical_edges = mesh.get_vertical_edges()
-            #ns.vertical_edges[0, ns.perm_P1]   = ns.vertical_edges.copy()[0, :]
-            #ns.vertical_edges[1, ns.perm_P1]   = ns.vertical_edges.copy()[1, :]
             
         elif (ns.renum == 0):
             ns.tab_connectivity_P1 = mesh.get_t()
@@ -143,7 +137,6 @@ def assembly(ns, mesh, scheme):
         ns.y1 = numpy.amin(ns.yy)
         ns.y2 = numpy.amax(ns.yy)
         
-        #finire di cambiare i d_... anche nel file init....
         ns.d_tab_connectivity_P1 = to_gpu( numpy.array( ns.tab_connectivity_P1, dtype = numpy.int32 ).flatten() )
         ns.d_tab_connectivity = to_gpu( numpy.array( ns.tab_connectivity, dtype = numpy.int32 ).flatten() )
         ns.d_x  = to_gpu( ns.x.astype(ns.type_fd) )
@@ -151,18 +144,19 @@ def assembly(ns, mesh, scheme):
         ns.d_xx = to_gpu( ns.xx.astype(ns.type_fd) )
         ns.d_yy = to_gpu( ns.yy.astype(ns.type_fd) )
 
-        #Definisco le condizioni a contorno
+        # Boundary conditions
         ns.N_diri1, ns.N_diri2, ns.N_free1, ns.N_free2 = identify_BC_velocity(ns, mesh)
         if not( ns.case == 1 or ns.case == 0):
             ns.N_dirirho = identify_BC_density(ns, mesh)
         #endif
         ns.rhs_bordo_init(mesh)
 
-        #definisco le griglie per i kernel
+        # number of DOFs
         ns.nuf1 = ns.N_free1.shape[0]
         ns.nuf2 = ns.N_free2.shape[0]
         ns.npf  = ns.NPfree.shape[0]
 
+        # CUDA grids' shapes    
         ns.grid_stk_dir   = (int(numpy.ceil( (ns.nn + ns.nn + ns.n)/ns.th) ) , 1)
         ns.grid_stk_dir_2 = (int(numpy.ceil(ns.n / ns.th)) , 1)
         ns.grid_stk_dir_3 = (int(numpy.ceil( (ns.nuf1 + ns.nuf2 + ns.npf) / ns.th) ) , 1)
@@ -173,9 +167,7 @@ def assembly(ns, mesh, scheme):
         ns.grid_LU1 = ( int(numpy.ceil( ns.nuf1/ns.th)),1 )
         ns.grid_LU2 = ( int(numpy.ceil( ns.nuf2/ns.th)),1 )
             
-        # creiamo i vari vettori che serviranno perla
-        # memorizzazione delle matrici in formati coo
-        # con un solo vettore per gli indici
+        # Matrices in COO format
         A_val = numpy.zeros(6 * 6 * ns.nt, dtype = ns.type_fd)
         B1_val = numpy.zeros(3 * 6 * ns.nt, dtype = ns.type_fd)
         B2_val = numpy.zeros(3 * 6 * ns.nt, dtype = ns.type_fd)
@@ -184,7 +176,7 @@ def assembly(ns, mesh, scheme):
         B_ind = numpy.zeros(3 * 6 * ns.nt, dtype = ns.type_uint)
 
 
-        # ATTENZIONE ACCESSO DIRETTO A MEMBRI "PRIVATI" DI MESH
+        # assembly of laplacian and divergence terms
         ns.assembly_lapl_div_P2P1_kernel(ns.d_xx, ns.d_yy, ns.d_tab_connectivity, ns.d_tab_connectivity_P1,
                                       numpy.int32(ns.nt),numpy.int32(ns.n), ns.type_uint(ns.nn),
                                       cuda.Out(A_val), cuda.Out(MA_ind),
@@ -192,7 +184,7 @@ def assembly(ns, mesh, scheme):
                                       block = ns.block, grid = ns.grid)
 
         
-        # Ordiniamo e facciamo riduzione
+        # Portprocessing (order and reduce)
         r_A_ind, r_A_val   = pri_SR_by_key(ns, MA_ind, A_val) # da considerare se tenere r_A_ind
         
         ns.I_P2, ns.J_P2 = create_ij(ns, r_A_ind, ns.nn)
@@ -206,23 +198,20 @@ def assembly(ns, mesh, scheme):
         ns.B1 = coo_matrix((r_B1_val, (I_B1, J_B1)), shape=(ns.n, ns.nn), dtype = ns.type_fd).tocsr()
         ns.B2 = coo_matrix((r_B2_val, (I_B2, J_B2)), shape=(ns.n, ns.nn), dtype = ns.type_fd).tocsr()
             
-        ns.B1_tra = ns.B1.T.tocsr() # transpose(copy = True)
-        ns.B2_tra = ns.B2.T.tocsr() #transpose(copy = True)
-
+        ns.B1_tra = ns.B1.T.tocsr()
+        ns.B2_tra = ns.B2.T.tocsr() 
 
         M_val = numpy.zeros(6 * 6 * ns.nt, dtype = ns.type_fd)
-        # vettori con gli indici
         M_ind = numpy.zeros(6 * 6 * ns.nt, dtype = ns.type_uint)
 
 
-        # ATTENZIONE ACCESSO DIRETTO A MEMBRI "PRIVATI" DI MESH
+        # assembly of mass term
         ns.assembly_mass_P2_kernel(ns.d_xx, ns.d_yy, ns.d_tab_connectivity, 
                                 numpy.int32(ns.nt), ns.type_uint(ns.nn),
                                 cuda.Out(M_val), cuda.Out(M_ind),
                                 block = ns.block, grid = ns.grid)
-        
-        # Ordiniamo e facciamo riduzione
-        r_M_ind, r_M_val   = pri_SR_by_key(ns, M_ind, M_val) # da considerare se tenere r_A_ind
+        # Portprocessing (order and reduce)
+        r_M_ind, r_M_val   = pri_SR_by_key(ns, M_ind, M_val) 
 
         I_M, J_M = create_ij(ns, r_M_ind, ns.nn)
         ns.M_P2 = coo_matrix((r_M_val, (I_M, J_M)), shape=(ns.nn, ns.nn), dtype = ns.type_fd).tocsr()
@@ -235,9 +224,9 @@ def assembly(ns, mesh, scheme):
         ns.B1 = coo_matrix((r_B1_val, (I_B1, J_B1)), shape=(ns.n, ns.nn), dtype = ns.type_fd).tocsr()
         ns.B2 = coo_matrix((r_B2_val, (I_B2, J_B2)), shape=(ns.n, ns.nn), dtype = ns.type_fd).tocsr()
             
-        ns.B1_tra = ns.B1.T.tocsr() # transpose(copy = True)
-        ns.B2_tra = ns.B2.T.tocsr() #transpose(copy = True)
-
+        ns.B1_tra = ns.B1.T.tocsr() 
+        ns.B2_tra = ns.B2.T.tocsr()
+        
         if (scheme == 'proj2'):
             MG_val = numpy.zeros(3 * 3 * ns.nt, dtype = ns.type_fd)
             LAP_val = numpy.zeros(3 * 3 * ns.nt, dtype = ns.type_fd)
@@ -263,14 +252,12 @@ def assembly(ns, mesh, scheme):
             ns.LAP = coo_matrix((r_LAP_val, (I_LAP, J_LAP)), shape=(ns.n, ns.n), dtype = ns.type_fd).tocsr()
             ns.LAP = ns.LAP[ns.NPfree, :][:, ns.NPfree]            
 
-            # mando a GPU
-            #ns.d_B1_tra_data, ns.d_B1_tra_indptr, ns.d_B1_tra_indices = csr_to_gpu(ns, ns.B1_tra)
-            #ns.d_B2_tra_data, ns.d_B2_tra_indptr, ns.d_B2_tra_indices = csr_to_gpu(ns, ns.B2_tra)
+            # move data from CPU to GPU
             ns.d_LAP_data, ns.d_LAP_indptr, ns.d_LAP_indices          = csr_to_gpu(ns, ns.LAP)
             ns.d_MG_data, ns.d_MG_indptr, ns.d_MG_indices             = csr_to_gpu(ns, ns.MG)
         #endif
         
-        # mando a GPU
+        # move data from CPU to GPU  
         ns.d_B1_data, ns.d_B1_indptr, ns.d_B1_indices             = csr_to_gpu(ns, ns.B1)
         ns.d_B2_data, ns.d_B2_indptr, ns.d_B2_indices             = csr_to_gpu(ns, ns.B2)
         ns.d_B1_tra_data, ns.d_B1_tra_indptr, ns.d_B1_tra_indices = csr_to_gpu(ns, ns.B1_tra)
