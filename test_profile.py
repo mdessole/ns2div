@@ -11,12 +11,9 @@ import os
 
 
 def test(nbseg_x = '8', nbseg_y = '8', scheme = 'BDF2',  case = 'EXAC'):
-    # versione e' una lista con i nomi dei
-    # casi:   versioni  da testare
-    
 
     if ((int(nbseg_x) % 2) != 0) or ((int(nbseg_y) % 2) != 0):
-        print('Error: the numer of discretization intervals per axis (nbseg_x and nbseg_y) must be even numbers')
+        print('Error: the number of discretization intervals per axis (nbseg_x and nbseg_y) must be an even number')
         return
     
     version = str( (int(nbseg_x)+1)*(int(nbseg_y)+1)*2 )
@@ -76,19 +73,19 @@ def test(nbseg_x = '8', nbseg_y = '8', scheme = 'BDF2',  case = 'EXAC'):
     print('Total elapsed time = ', tf - ti + tns_f - tns_i)
 
     if (prob.case == 0):
-        print('rho max computed =', numpy.amax(prob.rho), 'rho min conputed=', numpy.amin(prob.rho))
+        print('rho max computed =', numpy.amax(prob.rho), 'rho min computed=', numpy.amin(prob.rho))
     #endif
     if (prob.case == 1) or (prob.case == 3):
         u_ex_x, u_ex_y, p_ex, rho_ex = compute_exact_sol(prob, prob.T)
         print('rho=', rho_ex)
         print('rho computed = ', prob.rho)
         print('rho max =', numpy.amax(rho_ex), 'rho min =', numpy.amin(rho_ex))
-        print('rho max computed =', numpy.amax(prob.rho), 'rho min conputed=', numpy.amin(prob.rho))
+        print('rho max computed =', numpy.amax(prob.rho), 'rho min computed=', numpy.amin(prob.rho))
     #endif
 
         
     print()
-    print('Stop simulation')
+    print('Simulation terminated')
     
     if (prob.test_plot == 1):
         densitycontour(prob, scheme)
