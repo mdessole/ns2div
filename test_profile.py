@@ -1,4 +1,3 @@
-# File per i test
 from rectangular_mesh import *
 from assembly import *
 from ns import *
