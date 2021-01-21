@@ -18,7 +18,6 @@ def densitycontour(ns, scheme):
     
     #mesh = Mesh()
     if (caso == 5):
-        #cartella = "MESH_RT/" + versione
         time = [0.75, 2.0, 2.75, 3.0, 3.25, 3.5, 3.75]
         #[1.0, 1.5, 2.0, 2.5, 3.0, 3.25, 3.5, 3.75, 4.0] 
         #[1.0, 25.0, 50.0, 75.0, 100.0, 125.0, 150.0, 175.0, 200.0]#
@@ -28,7 +27,6 @@ def densitycontour(ns, scheme):
         y2 = 2
         caso = 'RTIN'+str(density_ratio)+'_'
     elif(caso == 4):
-        #cartella = "MESH_DROP/" + versione
         time = [0.25, 0.5, 1.0, 1.5, 2.0, 2.5]#[0.2, 0.5, 1.125, 1.25] #, 1.3612]
         x1 = 0.0
         x2 = 1.0
