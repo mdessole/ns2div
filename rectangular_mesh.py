@@ -1,12 +1,6 @@
-# -*- coding: utf-8 -*-
-# <nbformat>3.0</nbformat>
-
-# <codecell>
-
 import numpy
 import scipy.io
 
-# <codecell>
 
 class rect_mesh:
     def __init__(self, x1 = -1, x2 = 1, y1 = -1, y2 = 1, nbseg_x = 8, nbseg_y = 8):
@@ -255,10 +249,6 @@ class rect_mesh:
         
         return
 
-        """--------RICORDARE--------------------
-        i metodi get restituiscono una copia
-        del valore in memoria nella classe
-        -------------------------------------"""
     
     def get_nbseg_x(self):
         #Metodo che restituisce x
