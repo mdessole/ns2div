@@ -15,9 +15,9 @@ def check_so(folder, n_file, extension, path = None):
 
 def comp_so(folder, name, extension, path = None ):
     """
-    folder  = stringa con l'indirizzo della cartella dove e' contenuto il file
-    name    = nome del file senza .*
-    extension = e' la parte .* del nome del file
+    folder  = path to source file
+    name    = source file name without .*
+    extension = extention .* of the source file
     """
 
     if os.path.exists(folder + name + extension) and not os.path.exists(folder + name + '.so'):
