@@ -1,4 +1,4 @@
-# Numerica
+# Numerics
 import numpy
 import scipy
 from scipy.sparse import coo_matrix, csr_matrix, lil_matrix,diags, bmat, eye, triu, tril
@@ -13,17 +13,17 @@ from pycuda.gpuarray import to_gpu
 from pycuda.gpuarray import to_gpu_async
 from pycuda.curandom import rand as curand
 
-# per importare funzioni in c/c++
+# To import c/c++ code
 import ctypes
 from ctypes import c_ulonglong as c_ptr
 from ctypes import c_float, c_double, c_int
 from ctypes import POINTER, byref, pointer, cast
 from compiler import *
 
-# renumbering
+# Renumbering
 from scipy.sparse.csgraph import reverse_cuthill_mckee
 
-# Funzioni ausiliarie
+# Auxiliary functions
 from ns_auxil import *
 from intg_gauss import *
 from assembly import *
@@ -97,7 +97,7 @@ class NS:
         self.init_blockprec1 = 0
         self.init_blockprec2 = 0
         
-        # CARICO FUNZIONI
+        # IMPORT CUDA FUNCTIONS
         s_ker_assembly_rho = open('ker_assembly_rho.cu','r').read()
         mod_ker_assembly_rho = SourceModule(s_ker_assembly_rho, options = ['--prec-div=true'])
         self.assembly_lapl_div_P2P1_kernel = mod_ker_assembly_rho.get_function("assembly_lapl_div_P2P1")
@@ -133,7 +133,7 @@ class NS:
         self.rho_P0projection = mod_ker_norm.get_function('rho_P0projection')
 
        
-        # italu
+        # ITALU
         cartella = './'
         nome = 'lib_italu'
         desinenza = '.cu'       
@@ -229,7 +229,6 @@ class NS:
 
 
     def scheme_rhs_cpu(self, wnl_x, wnl_y, scheme, wnlo_x = None, wnlo_y = None):
-        # Nota sui nomi
         # wnl_x -> uo_x   wnl_y -> uo_y
         # wnlo_x -> uoo_x wnlo_y -> uoo_y
 
@@ -411,7 +410,7 @@ class NS:
 
 
     def scheme(self, mesh, scheme_type, it = None ):
-        # it = numero di iterazione NS
+        # it = NS iteration number
             
         if scheme_type == 'stokes':
             self.LG = self.A / self.Re
@@ -764,7 +763,6 @@ class NS:
 
 
     def pri_u_diri(self, mesh, t):
-        # setto a 1 le entrate di u_x che hanno indice al bordo e y = y2
         if (self.case == 0): #LDC
             for i in self.N_diri1:
                 if(self.yy[i] == self.y2) and (self.xx[i] != self.x2) and (self.xx[i] != self.x1):
@@ -873,7 +871,7 @@ class NS:
             rhsu_x, rhsu_y, rhsp = self.scheme_rhs_gpu(self.uo_x, self.uo_y, scheme, wnlo_x = self.uoo_x, wnlo_y = self.uoo_y)
 
         
-        #Resol stokes
+        #solve Stokes problem
         if (scheme == 'proj2'): 
             self.stokes_proj2(mesh, i, rhsu_x = rhsu_x, rhsu_y = rhsu_y, rhsp = rhsp)
         else:
@@ -896,8 +894,6 @@ class NS:
         wrk_x[:]=(self.u_x[self.tab_connectivity[:,3]]+self.u_x[self.tab_connectivity[:,4]]+self.u_x[self.tab_connectivity[:,5]])/3.0
         wrk_y[:]=(self.u_y[self.tab_connectivity[:,3]]+self.u_y[self.tab_connectivity[:,4]]+self.u_y[self.tab_connectivity[:,5]])/3.0
 
-        #check: quanto scritto sotto e' compatibile con una mesh riordinata???
-        #bisogna riordinare anche i vertical e horizontal edges
 
         for i in range(self.nt):
             ubar_x[self.horizontal_edges[0][i]*(self.nbseg_y+1)+self.horizontal_edges[1][i]] += wrk_x[i]/2.0
@@ -939,8 +935,7 @@ class NS:
                             d_deltarho1,
                             block = self.block, grid = self.grid_t)
 
-        #print 'max d_deltarho1 = ', numpy.amax(d_deltarho1.get()), 'min d_d_deltarho1 = ', numpy.amin(d_deltarho1.get())
-        
+     
         self.xpy_ker(d_deltarho1, d_rhostar, self.type_int(self.n), block = self.block, grid = self.grid_t) #d_rhostar = d_rhostar + d_deltarho1
 
 
@@ -1055,7 +1050,7 @@ class NS:
         self.iteration_exectime2 = numpy.zeros( (self.max_it_ns+2,) )
 
         
-        #prime due iterazioni
+        #First two iterations in order to initialize variables
         iter_ns = 0
         if (self.case == 1) or (self.case == 2) or (self.case == 3):
             self.uoo_x = self.u_x.copy()
@@ -1121,16 +1116,16 @@ class NS:
             #endif
             self.t = self.t + self.Dt_FE
 
-            #Aggiorno u e p
+            #Undate u and p
             self.uoo_x = self.uo_x.copy()
             self.uo_x  = self.u_x.copy()
             self.uoo_y = self.uo_y.copy()
             self.uo_y  = self.u_y.copy()
             self.po    = self.p.copy()
-            #Aggiorno rho
+            #Update rho
             self.rhooo = self.rhoo.copy()
             self.rhoo  = self.rho.copy()
-            #Aggiorno phi
+            #Update phi
             self.phioo = self.phio.copy()
             self.phio  = self.phi.copy()
             
@@ -1143,7 +1138,7 @@ class NS:
                 min_DT = numpy.minimum(self.Dt_FE, (coef_CFL/nrm))
             else:
                 min_DT = self.Dt_FE
-            #endid
+            #endif
 
             self.Dto_FV = self.Dt_FV
             self.Dt_div = int(math.ceil(self.Dt_FE/min_DT))
@@ -1154,11 +1149,11 @@ class NS:
                 self.rho = self.resol_1it_transport(step_split, transport_t, i)
                 transport_t = transport_t + self.Dt_FV
                 self.rhoo = self.rho.copy() #
-            #end for
+            #endfor
             self.rhoo = rhoo_tmp.copy()
 
             
-            #Implemento condizioni Dirichlet
+            # Dirichlet BC
             if(self.case == 1): #EXAC
                 self.pri_u_diri(mesh, self.t)
             #endif
@@ -1166,7 +1161,7 @@ class NS:
             ###############################
             ###########FE scheme###########
             ###############################
-            if (self.case == 3): #RRHO 3
+            if (self.case == 3):
                 self.u_x, self.u_y, self.p, rho_ex = compute_exact_sol(self, self.t)
             else:
                 self.resol_1it_ns(mesh, i, iter_ns, step_split, scheme)
@@ -1193,23 +1188,22 @@ class NS:
             self.step_split = 2
             print('Step Strang =', step_split)
 
-            #self.Dto_FE = self.Dt_FE
             self.t = self.t + self.Dt_FE
 
-            #Aggiorno u e p
+            #Update u and p
             self.uoo_x = self.uo_x.copy()
             self.uo_x  = self.u_x.copy()
             self.uoo_y = self.uo_y.copy()
             self.uo_y  = self.u_y.copy()
             self.po    = self.p.copy()
-            #Aggiorno rho
+            #Update rho
             self.rhooo = self.rhoo.copy()
             self.rhoo  = self.rho.copy()
-            #Aggiorno phi
+            #Update phi
             self.phioo = self.phio.copy()
             self.phio  = self.phi.copy()
 
-            #Implemento condizioni Dirichlet
+            # Dirichlet BC
             if(self.case == 1): #EXAC
                 self.pri_u_diri(mesh, self.t)
             #endif
@@ -1412,13 +1406,10 @@ class NS:
         
         if (self.max_err_u is None) or (self.max_err_u < err_u) or (i ==  numpy.floor(0.30 / self.Dt)):
             self.max_err_u = err_u
-            #print 'max err u = ', i
         if (self.max_err_p is None) or (self.max_err_p < err_p) or (i ==  numpy.floor(0.30 / self.Dt)):
             self.max_err_p = err_p
-            #print 'max err p = ', i
         if self.max_err_rho is None or (self.max_err_rho < err_rho) or (i ==  numpy.floor(0.30 / self.Dt)):
             self.max_err_rho = err_rho
-            #print 'max err rho = ', i
         print('ERR EX U \t  ERR EX P \t ERR EX RHO ')
         print(err_u, '\t', err_p, '\t', err_rho)
         
@@ -1455,9 +1446,6 @@ class NS:
             nrmp_ex     = norm_L2_parallel(self, 1, p_ex)
             nrmrho_ex   = math.sqrt( numpy.dot(numpy.square(rho_ex), self.volume) )
             
-            #nrmu_ex     = numpy.sqrt( numpy.square(norm_L2_ex_parallel(self, 2, 1, nrm = 'ex') ) + numpy.square(norm_L2_ex_parallel(self, 2, 2,  nrm = 'ex') )  )
-            #nrmp_ex     = norm_L2_ex_parallel(self, 1, 0,  nrm = 'ex')
-            #nrmrho_ex   = numpy.dot( numpy.absolute( rho_proj_ex ), self.volume )
             
             if (nrmu > 0):
                 eru  = err_u / nrmu_ex
