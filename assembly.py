@@ -3,8 +3,6 @@ from scipy.sparse import coo_matrix, csr_matrix
 import pycuda.driver as cuda
 from pycuda.gpuarray import to_gpu
 from ctypes import c_ulonglong as c_ptr
-
-#from pycuda_auxil import *
 from ns_auxil import *
 from pycuda_auxil import *
 
